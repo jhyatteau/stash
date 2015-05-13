@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# tests network interfaces for agreement between kernel and biosname
+
+OK=0
+CRIT=2
+result=$OK
+
+ls /sys/class/net/e* /sys/class/net/p* -d | while read devname && [[ $result == 0 ]] ; do
+  devname=${devname#/sys/class/net/};
+  biosname=`/sbin/biosdevname -i $devname`;
+  if [ $devname != $biosname ]; then
+        echo CRIT - $devname is not $biosname
+	result=$CRIT
+  fi
+done
+if [ $result == 0 ] ; then
+	echo OK
+fi
+exit $result
+
